@@ -1,0 +1,145 @@
+{
+  "info": {
+    "_postman_id": "c8e2d867-515b-48c2-a66d-539b7c0b8894",
+    "name": "EntradasYa - Tickets",
+    "description": "Solicitudes de prueba para tickets. Configura ordersKey para emitir entradas; usa tokenClient y tokenPortero para consulta y control de acceso.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{tokenClient}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3005", "type": "string" },
+    { "key": "ordersKey", "value": "", "type": "string" },
+    { "key": "tokenClient", "value": "", "type": "string" },
+    { "key": "tokenPortero", "value": "", "type": "string" },
+    { "key": "customerId", "value": "1", "type": "string" },
+    { "key": "orderId", "value": "123", "type": "string" },
+    { "key": "ticketId", "value": "1", "type": "string" },
+    { "key": "ticketCode", "value": "TKT-7A42E5B180D9012C", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "POST Generar tickets (orders)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 201) {",
+              "  const tickets = pm.response.json().data;",
+              "  if (Array.isArray(tickets) && tickets.length > 0) {",
+              "    pm.collectionVariables.set('ticketId', tickets[0].id);",
+              "    pm.collectionVariables.set('ticketCode', tickets[0].code);",
+              "  }",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "auth": { "type": "noauth" },
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "x-orders-key", "value": "{{ordersKey}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"orderId\": {{orderId}},\n  \"customerId\": {{customerId}},\n  \"event\": {\n    \"id\": 14,\n    \"name\": \"Festival EntradasYa\",\n    \"date\": \"2027-06-20T20:00:00-04:00\",\n    \"place\": \"Estadio Central\"\n  },\n  \"tickets\": [\n    {\n      \"itemId\": \"06b1d7b6-1bc7-4a35-bbc0-86cece5d10e3\",\n      \"sectorId\": 3,\n      \"sectorName\": \"General\",\n      \"seatNumber\": \"A-12\"\n    }\n  ]\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/tickets/generate",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "tickets", "generate"]
+        },
+        "description": "Solicitud interna de orders. Configura ordersKey con el mismo ORDERS_API_KEY del servicio. orderId, customerId, event.id y sectorId son enteros; itemId es UUID."
+      }
+    },
+    {
+      "name": "GET Mis tickets (cliente)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/tickets/my",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "tickets", "my"]
+        }
+      }
+    },
+    {
+      "name": "GET Tickets de una compra (cliente)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/tickets/order/{{orderId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "tickets", "order", "{{orderId}}"]
+        },
+        "description": "Solo devuelve tickets de una compra que pertenezca al usuario autenticado."
+      }
+    },
+    {
+      "name": "GET Descargar PDF (cliente)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/tickets/{{ticketId}}/download",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "tickets", "{{ticketId}}", "download"]
+        },
+        "description": "El cliente solo puede descargar su propio ticket."
+      }
+    },
+    {
+      "name": "POST Validar código (portero)",
+      "request": {
+        "method": "POST",
+        "auth": {
+          "type": "bearer",
+          "bearer": [{ "key": "token", "value": "{{tokenPortero}}", "type": "string" }]
+        },
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"code\": \"{{ticketCode}}\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/tickets/validate",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "tickets", "validate"]
+        }
+      }
+    },
+    {
+      "name": "POST Registrar check-in (portero)",
+      "request": {
+        "method": "POST",
+        "auth": {
+          "type": "bearer",
+          "bearer": [{ "key": "token", "value": "{{tokenPortero}}", "type": "string" }]
+        },
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/tickets/{{ticketCode}}/check-in",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "tickets", "{{ticketCode}}", "check-in"]
+        },
+        "description": "Marca el ticket como usada. Si se envía otra vez, el servicio responde que ya fue utilizado."
+      }
+    }
+  ]
+}

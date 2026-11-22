@@ -1,0 +1,18 @@
+{
+  "name": "notifications",
+  "version": "1.0.0",
+  "description": "Microservicio de notificaciones de EntradasYa",
+  "main": "src/server.js",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "nodemailer": "^10.5.0"
+  }
+}

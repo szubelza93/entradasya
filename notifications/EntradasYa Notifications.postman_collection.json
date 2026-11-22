@@ -1,0 +1,103 @@
+{
+  "info": {
+    "_postman_id": "2cb7c292-8e7c-4bcb-b85f-a802cd2ee539",
+    "name": "EntradasYa Notifications",
+    "description": "Solicitudes disponibles en el microservicio notifications.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3006",
+      "type": "string"
+    },
+    {
+      "key": "ordersKey",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Consultar estado del servicio",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "item": [
+        {
+          "name": "Enviar correo de prueba",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"to\": \"destinatario@example.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/notifications/test",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "notifications", "test"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Enviar confirmación de compra",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-orders-key",
+                "value": "{{ordersKey}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"to\": \"destinatario@example.com\",\n  \"customerName\": \"Ana Pérez\",\n  \"orderId\": \"ORD-12345\",\n  \"eventName\": \"Concierto de ejemplo\",\n  \"ticketsUrl\": \"https://entradas.example.com/mis-entradas/ORD-12345\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/notifications/purchase-confirmation",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "notifications", "purchase-confirmation"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,228 @@
+{
+  "info": {
+    "_postman_id": "f65dc410-a276-47fa-88a9-8bd7f073674c",
+    "name": "EntradasYa - Events",
+    "description": "Solicitudes implementadas del microservicio Events. Define baseUrl y token en las variables de la colección. El token debe pertenecer a un usuario con rol organizador para las rutas protegidas.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3002",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "eventId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "sectorId",
+      "value": "1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "GET Lista pública de eventos",
+      "request": {
+        "method": "GET",
+        "auth": { "type": "noauth" },
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/events?page=1&limit=10&search=festival",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "events"],
+          "query": [
+            { "key": "page", "value": "1" },
+            { "key": "limit", "value": "10" },
+            { "key": "search", "value": "festival" }
+          ]
+        },
+        "description": "Parámetros opcionales: page, limit (máximo 50) y search."
+      }
+    },
+    {
+      "name": "GET Detalle público de evento",
+      "request": {
+        "method": "GET",
+        "auth": { "type": "noauth" },
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/events/{{eventId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "events", "{{eventId}}"]
+        }
+      }
+    },
+    {
+      "name": "POST Crear evento",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 201) {",
+              "  pm.collectionVariables.set('eventId', pm.response.json().data.id);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            { "key": "imagen", "type": "file", "src": [] },
+            { "key": "nombre", "value": "Festival EntradasYa", "type": "text" },
+            { "key": "descripcion", "value": "Música en vivo", "type": "text" },
+            { "key": "fecha", "value": "2027-06-20T20:00:00-04:00", "type": "text" },
+            { "key": "lugar", "value": "Estadio Central", "type": "text" },
+            {
+              "key": "sectores",
+              "value": "[{\"nombre\":\"General\",\"precio\":120,\"cupo\":500}]",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/events",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "events"]
+        },
+        "description": "Selecciona una imagen JPEG, PNG o WebP de hasta 5 MB en el campo imagen. Postman genera el Content-Type multipart automáticamente."
+      }
+    },
+    {
+      "name": "GET Mis eventos",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/events/mine",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "events", "mine"]
+        }
+      }
+    },
+    {
+      "name": "GET Gestionar evento propio",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/events/{{eventId}}/manage",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "events", "{{eventId}}", "manage"]
+        }
+      }
+    },
+    {
+      "name": "PATCH Actualizar evento",
+      "request": {
+        "method": "PATCH",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Festival EntradasYa actualizado\",\n  \"descripcion\": \"Música en vivo y más\",\n  \"fecha\": \"2027-06-20T20:00:00-04:00\",\n  \"lugar\": \"Estadio Central\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/events/{{eventId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "events", "{{eventId}}"]
+        }
+      }
+    },
+    {
+      "name": "POST Publicar evento",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/events/{{eventId}}/publish",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "events", "{{eventId}}", "publish"]
+        },
+        "description": "El evento debe tener fecha futura y al menos un sector activo."
+      }
+    },
+    {
+      "name": "POST Cancelar evento",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/events/{{eventId}}/cancel",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "events", "{{eventId}}", "cancel"]
+        }
+      }
+    },
+    {
+      "name": "POST Agregar sector",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 201) {",
+              "  pm.collectionVariables.set('sectorId', pm.response.json().data.id);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Preferencia\",\n  \"precio\": 200,\n  \"cupo\": 300\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/events/{{eventId}}/sectors",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "events", "{{eventId}}", "sectors"]
+        }
+      }
+    },
+    {
+      "name": "PATCH Actualizar sector",
+      "request": {
+        "method": "PATCH",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Preferencia\",\n  \"precio\": 220,\n  \"cupo\": 350,\n  \"activo\": true\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/events/{{eventId}}/sectors/{{sectorId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "events", "{{eventId}}", "sectors", "{{sectorId}}"]
+        }
+      }
+    }
+  ]
+}
